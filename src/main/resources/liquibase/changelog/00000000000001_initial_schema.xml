@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+
+    <!-- Core tables. The initial schema has the '00000000000001' id, so that it is over-written if we re-generate it. -->
+    <changeSet id="0000000000000-1" author="weverton">
+
+        <createSequence sequenceName="product_sequence" startValue="1000" incrementBy="1"/>
+        <createSequence sequenceName="store_sequence" startValue="1000" incrementBy="1"/>
+        <createSequence sequenceName="store_product_sequence" startValue="1000" incrementBy="1"/>
+
+        <createTable tableName="products">
+
+            <column name="prod_id" type="bigint">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+
+            <column name="prod_name" type="varchar">
+                <constraints nullable="false" unique="true"/>
+            </column>
+
+            <column name="quantity" type="numeric">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="created_by" type="varchar">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="timestamp"/>
+            <column name="last_modified_by" type="varchar"/>
+            <column name="last_modified_date" type="timestamp"/>
+        </createTable>
+
+        <createTable tableName="stores">
+
+            <column name="store_id" type="bigint">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+
+            <column name="name" type="varchar">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="address" type="varchar">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="city" type="varchar">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="country" type="varchar">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="created_by" type="varchar">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="created_date" type="timestamp"/>
+            <column name="last_modified_by" type="varchar"/>
+            <column name="last_modified_date" type="timestamp"/>
+
+        </createTable>
+
+        <createTable tableName="store_product">
+
+            <column name="store_product_id" type="bigint">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+
+            <column name="fk_store_id" type="bigint">
+                <constraints nullable="false" foreignKeyName="store_id" referencedTableName="stores"
+                             unique="true"/>
+            </column>
+
+            <column name="fk_prod_id" type="bigint">
+                <constraints nullable="false" foreignKeyName="prod_id" referencedTableName="products"
+                             unique="true"/>
+            </column>
+
+            <column name="status" type="varchar">
+                <constraints nullable="false"/>
+            </column>
+
+
+            <column name="created_by" type="varchar">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="timestamp"/>
+            <column name="last_modified_by" type="varchar"/>
+            <column name="last_modified_date" type="timestamp"/>
+        </createTable>
+
+        <addForeignKeyConstraint baseColumnNames="fk_store_id"
+                                 baseTableName="store_product"
+                                 constraintName="fk_store_id"
+                                 referencedColumnNames="store_id"
+                                 referencedTableName="stores"/>
+
+        <addForeignKeyConstraint baseColumnNames="fk_prod_id"
+                                 baseTableName="store_product"
+                                 constraintName="fk_prod_id"
+                                 referencedColumnNames="prod_id"
+                                 referencedTableName="products"/>
+    </changeSet>
+
+    <changeSet author="Weverton" id="addDefaultValueSequenceNext">
+        <addDefaultValue columnName="prod_id"
+                         defaultValueSequenceNext="product_sequence"
+                         schemaName="public"
+                         tableName="products"/>
+
+        <addDefaultValue columnName="store_id"
+                         defaultValueSequenceNext="store_sequence"
+                         schemaName="public"
+                         tableName="stores"/>
+
+        <addDefaultValue columnName="store_product_id"
+                         defaultValueSequenceNext="store_product_sequence"
+                         schemaName="public"
+                         tableName="store_product"/>
+    </changeSet>
+
+
+    <changeSet author="Weverton" id="updateIncrementByOfSequences">
+
+        <alterSequence incrementBy="1"
+                       schemaName="public"
+                       sequenceName="product_sequence"/>
+
+        <alterSequence incrementBy="1"
+                       schemaName="public"
+                       sequenceName="store_sequence"/>
+
+        <alterSequence incrementBy="1"
+                       schemaName="public"
+                       sequenceName="store_product_sequence"/>
+    </changeSet>
+
+
+</databaseChangeLog>
